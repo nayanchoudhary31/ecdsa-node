@@ -9,13 +9,14 @@ label {
   display: flex;
   flex-direction: column;
   letter-spacing: 0.05rem;
-  font-size: .8em;
+  font-size: 0.8em;
   font-weight: 400;
   color: #222;
 }
 
 .app {
-  display: flex;
+  // display: flex;
+  // justify-content: center;
   max-width: 1400px;
   flex-wrap: wrap;
   gap: 12px;
@@ -24,7 +25,7 @@ label {
 
 .container {
   flex-grow: 1;
-  margin: 0 20px;
+  margin: 15px 20px;
   background-color: #fff;
   border: 1px solid #cbd5e0;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -50,7 +51,10 @@ input {
 }
 
 .button {
+  display: flex;
   background-color: #319795;
+  align-items: center;
+  justify-content: center;
   border-radius: 0.125rem;
   padding: 10px 20px;
   color: white;
@@ -58,7 +62,7 @@ input {
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 400;
-  font-size: .9em;
+  font-size: 0.9em;
   &:hover {
     cursor: pointer;
   }
@@ -72,7 +76,7 @@ input {
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 400;
-    font-size: .9em;
+    font-size: 0.9em;
     display: inline-flex;
     margin-top: 10px;
     padding: 0.75rem;
@@ -83,4 +87,25 @@ input {
 .transfer {
   display: flex;
   flex-direction: column;
+  .sig {
+    text-transform: uppercase;
+    overflow-x: scroll;
+    letter-spacing: 1px;
+    font-weight: 400;
+    font-size: 0.9em;
+    display: inline-flex;
+    margin-top: 10px;
+    padding: 0.75rem;
+    background-color: #f4f6f8;
+  }
+  .recoveryBit {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 400;
+    font-size: 0.9em;
+    display: inline-flex;
+    margin-top: 10px;
+    padding: 0.75rem;
+    background-color: #f4f6f8;
+  }
 }
