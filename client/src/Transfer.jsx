@@ -2,15 +2,13 @@ import { useState } from "react";
 import server from "./server";
 import { sign } from "ethereum-cryptography/secp256k1";
 import { keccak256 } from "ethereum-cryptography/keccak";
-import { hexToBytes,utf8ToBytes } from "ethereum-cryptography/utils";
+import { hexToBytes, utf8ToBytes } from "ethereum-cryptography/utils";
 
-function Transfer({ address, setBalance, setAddress }) {
-  const[walletAddress,setWalletAddress] = useState("");
+function Transfer() {
+  const [walletAddress, setWalletAddress] = useState("");
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
-  const [privateKey, setPrivateKey] = useState("");
   const [signature, setSignature] = useState("");
-  const [recoveryBit, setRecoveryBit] = useState("");
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
@@ -19,45 +17,26 @@ function Transfer({ address, setBalance, setAddress }) {
 
     try {
       const {
-        data: { balance },
+        data: { balance, transactions },
       } = await server.post(`send`, {
-        sender: address,
+        sender: walletAddress,
         amount: parseInt(sendAmount),
         recipient,
+        signature,
+        recoverBit: signature[0],
       });
-      setBalance(balance);
     } catch (ex) {
-      alert(ex.response.data.message);
+      alert(ex.response.data);
     }
   }
-
-  async function getSignature(privateKey,event) {
-    try {
-      event.preventDefault();
-      // const hashedMessage = keccak256(utf8ToBytes(message));
-      const txDetails = JSON.stringify({
-        sender:walletAddress,
-        amount:sendAmount,
-        nonce: Math.floor(Math.random()*10)+1,
-        recipient:recipient
-      })
-      const hashedData = keccak256(utf8ToBytes(txDetails));
-      const _privateKey = hexToBytes(privateKey);
-      const sig = await sign(hashedData, _privateKey, { recovered: true });
-      console.log("🚀 ~ file: Transfer.jsx:37 ~ getSignature ~ sig:", sig[0].toString());
-      setSignature(sig[0].toString());
-      setRecoveryBit(sig[1].toString());
-    } catch (error) {
-      console.log("🚀 ~ file: Transfer.jsx:40 ~ getSignature ~ error:", error);
-    }
-  }
-
   return (
     <form
       className="container transfer"
-      onSubmit={(e)=>{getSignature(privateKey,e)}}
+      onSubmit={(e) => {
+        transfer(e);
+      }}
     >
-      <h1>Sign Transaction</h1>
+      <h1>Transfer Amount </h1>
 
       <label>
         Wallet Address
@@ -76,29 +55,23 @@ function Transfer({ address, setBalance, setAddress }) {
           onChange={setValue(setSendAmount)}
         ></input>
       </label>
-
       <label>
         Recipient
         <input
-          placeholder="Type an address, for example: 0x2"
+          placeholder="Type an address for example: 0x2"
           value={recipient}
           onChange={setValue(setRecipient)}
         ></input>
       </label>
-
       <label>
-        Private Key
+        Signature
         <input
-          placeholder="Type an address, for example: 0x3"
-          value={privateKey}
-          type="password"
-          onChange={setValue(setPrivateKey)}
+          placeholder="0x123abc...."
+          value={signature}
+          onChange={setValue(setSignature)}
         ></input>
       </label>
-      <div className="sig" onClick={()=>{navigator.clipboard.writeText(signature)}}>Signature:{signature}</div>
-      <div className="recoveryBit">RecoveryBit:{recoveryBit}</div>
-
-      <input type="submit" className="button" value="Generate Signature" />
+      <input type="submit" className="button" value="Transfer" />
     </form>
   );
 }
