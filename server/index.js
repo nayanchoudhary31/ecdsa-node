@@ -56,7 +56,7 @@ app.get("/transaction/:walletAddress", (req, res) => {
 app.post("/send", (req, res) => {
   // TODO Get the signature from the client side
   // Revcover the public address from signature
-  const { sender, recipient, amount, sig, recoverBit } = req.body;
+  const { sender, recipient, amount, signature, recoveryBit } = req.body;
 
   setInitialBalance(sender);
   setInitialBalance(recipient);
@@ -70,8 +70,8 @@ app.post("/send", (req, res) => {
   const hashedTxObj = keccak256(utf8ToBytes(JSON.stringify(txObject)));
   const pubKey = sepc.recoverPublicKey(
     hashedTxObj,
-    Uint8Array.from(sig.split(",")),
-    parseInt(recoverBit)
+    Uint8Array.from(signature.split(",")),
+    parseInt(recoveryBit)
   );
   console.log("🚀 ~ file: index.js:72 ~ app.post ~ pubKey:", pubKey);
 
