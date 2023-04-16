@@ -75,6 +75,10 @@ app.post("/send", (req, res) => {
   );
   console.log("🚀 ~ file: index.js:72 ~ app.post ~ pubKey:", pubKey);
 
+  if( sender !== getAddressFromPublicKey(pubKey)){
+    res.status(400).send({message:"Signature Mismatched or Public Key Invalid"});
+  }
+
   if (balances[sender] < amount) {
     res.status(400).send({ message: "Not enough funds!" });
   } else {
@@ -93,4 +97,8 @@ function setInitialBalance(address) {
   if (!balances[address]) {
     balances[address] = 0;
   }
+}
+
+function getAddressFromPublicKey(pubKey){
+  return `0x${keccak256(pubKey.slice(0)).slice(-20)}`;
 }

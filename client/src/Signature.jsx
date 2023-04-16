@@ -11,12 +11,12 @@ function Signature() {
   const [privateKey, setPrivateKey] = useState("");
   const [signature, setSignature] = useState("");
   const [recoveryBit, setRecoveryBit] = useState("");
+  const [btnStatus, setBtnStatus] = useState("GS");
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
-  async function getSignature(privateKey, event) {
+  async function getSignature() {
     try {
-      event.preventDefault();
       const {
         data: { transactionId },
       } = await server.get(`transaction/${walletAddress}`);
@@ -28,20 +28,44 @@ function Signature() {
       });
       const hashedData = keccak256(utf8ToBytes(txDetails));
       const _privateKey = hexToBytes(privateKey);
-      const sig = await sign(hashedData, _privateKey, { recovered: true });
-      setSignature(sig[0].toString());
-      setRecoveryBit(sig[1].toString());
+      const [sig, rBit] = await sign(hashedData, _privateKey, {
+        recovered: true,
+      });
+
+      setSignature(sig.toString());
+
+      setRecoveryBit(rBit.toString());
+      setBtnStatus("TF");
     } catch (error) {
       console.log("🚀 ~ file: Transfer.jsx:40 ~ getSignature ~ error:", error);
+    }
+  }
+
+  async function sendTransfer() {
+    try {
+      const {
+        data: { balance, transaction },
+      } = await server.post(`send`, {
+        sender: walletAddress,
+        amount: parseInt(sendAmount),
+        recipient,
+        signature,
+        recoveryBit: parseInt(recoveryBit),
+      });
+
+      console.log(`Balance : ${balance}`);
+      console.log(`Transactions : ${transaction}`);
+    } catch (error) {
+      alert(error.response.data);
     }
   }
 
   return (
     <form
       className="container transfer"
-      onSubmit={(e) => {
-        getSignature(privateKey, e);
-      }}
+      // onSubmit={(e) => {
+      //   ;
+      // }}
     >
       <h1>Sign Transaction</h1>
 
@@ -90,8 +114,27 @@ function Signature() {
         Signature:{signature}
       </div>
       <div className="recoveryBit">RecoveryBit:{recoveryBit}</div>
-
-      <input type="submit" className="button" value="Generate Signature" />
+      {console.log(`Status ${btnStatus}`)}
+      {btnStatus === "GS" ? (
+        <input
+          type="button"
+          onClick={getSignature}
+          className="button"
+          value="Generate Signature"
+        />
+      ) : (
+        ""
+      )}
+      {btnStatus === "TF" ? (
+        <input
+          type="button"
+          onClick={sendTransfer}
+          className="button"
+          value="Transfer"
+        />
+      ) : (
+        ""
+      )}
     </form>
   );
 }

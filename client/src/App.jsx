@@ -2,7 +2,6 @@ import Wallet from "./Wallet";
 import Signature from "./Signature";
 import "./App.scss";
 import { useState } from "react";
-import Transfer from "./Transfer";
 
 function App() {
   const [balance, setBalance] = useState(0);
@@ -17,7 +16,6 @@ function App() {
         setAddress={setAddress}
       />
       <Signature />
-      <Transfer />
     </div>
   );
 }
